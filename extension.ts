@@ -13,10 +13,19 @@ var modeHandler : ModeHandler;
 var extensionContext : vscode.ExtensionContext;
 
 export function activate(context: vscode.ExtensionContext) {
-    console.log('Congratulations, your extension "vim" is now active!');
-
     extensionContext = context;
 
+    registerCommand(context, 'type', (args) => {
+		if (!vscode.window.activeTextEditor) {
+			return;
+		}
+        
+        console.log(args.text);
+        handleKeyEvent(args.text);
+    });
+    
+   registerCommand(context, 'extension.vim_esc', () => handleKeyEvent("esc"));    
+/*
     registerCommand(context, 'extension.showCmdLine', () => {
         if (!modeHandler) {
             modeHandler = new ModeHandler();
@@ -114,7 +123,7 @@ export function activate(context: vscode.ExtensionContext) {
 
     registerCommand(context, 'extension.vim_oem_102', () => handleKeyEvent("oem_102"));
     registerCommand(context, 'extension.vim_shift_oem_102', () => handleKeyEvent("shift+oem_102"));
-
+*/
     context.subscriptions.push(modeHandler);
 }
 
