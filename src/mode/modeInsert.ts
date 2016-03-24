@@ -46,7 +46,7 @@ export class InsertMode extends Mode {
         await this.activationKeyHandler[key](this.motion);
     }
 
-    async handleKeyEvent(key : string) : Promise<boolean> {
+    async handleKeyEvent(key : string) : Promise<Boolean> {
         await TextEditor.insert(this.resolveKeyValue(key));
         return true;
     }

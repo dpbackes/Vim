@@ -15,17 +15,24 @@ var extensionContext : vscode.ExtensionContext;
 export function activate(context: vscode.ExtensionContext) {
     extensionContext = context;
 
-    registerCommand(context, 'type', (args) => {
+    registerCommand(context, 'type', async (args) => {
 		if (!vscode.window.activeTextEditor) {
 			return;
 		}
         
+        var isHandled = await handleKeyEvent(args.text);
+        
         console.log(args.text);
-        handleKeyEvent(args.text);
+        console.log(isHandled);
+
+        if (!isHandled) {        
+            vscode.commands.executeCommand('default:type', {
+                text: args.text
+            });
+        }
     });
     
-   registerCommand(context, 'extension.vim_esc', () => handleKeyEvent("esc"));    
-/*
+    registerCommand(context, 'extension.vim_esc', () => handleKeyEvent("esc"));
     registerCommand(context, 'extension.showCmdLine', () => {
         if (!modeHandler) {
             modeHandler = new ModeHandler();
@@ -33,7 +40,7 @@ export function activate(context: vscode.ExtensionContext) {
         }
         showCmdLine("", modeHandler);
     });
-
+/*
     registerCommand(context, 'extension.vim_esc', () => handleKeyEvent("esc"));
     registerCommand(context, 'extension.vim_colon', () => handleKeyEvent(":"));
     registerCommand(context, 'extension.vim_space', () => handleKeyEvent("space"));
@@ -132,11 +139,11 @@ function registerCommand(context: vscode.ExtensionContext, command: string, call
     context.subscriptions.push(disposable);
 }
 
-function handleKeyEvent(key: string) {
+function handleKeyEvent(key: string) : Promise<Boolean> {
     if (!modeHandler) {
         modeHandler = new ModeHandler();
         extensionContext.subscriptions.push(modeHandler);
     }
 
-    modeHandler.handleKeyEvent(key);
+    return modeHandler.handleKeyEvent(key);
 }

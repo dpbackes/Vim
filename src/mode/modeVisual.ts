@@ -128,7 +128,7 @@ export class VisualMode extends Mode {
         return !!operator;
     }
 
-    async handleKeyEvent(key: string): Promise<boolean> {
+    async handleKeyEvent(key: string): Promise<Boolean> {
         this._keyHistory.push(key);
 
         const wasMotion = await this._handleMotion();
