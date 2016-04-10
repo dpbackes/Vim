@@ -60,7 +60,13 @@ export class Motion implements vscode.Disposable {
                 let line = selection.active.line;
                 let char = selection.active.character;
 
-                this.position = new Position(line, char, null);
+                var newPosition = new Position(line, char, this._position.positionOptions);
+
+                if (char > newPosition.getLineEnd().character) {
+                   newPosition = new Position(newPosition.line, newPosition.getLineEnd().character, null);
+                }
+
+                this.position = newPosition;
                 this._desiredColumn = this.position.character;
                 this.changeMode(this._motionMode);
             }
@@ -72,7 +78,7 @@ export class Motion implements vscode.Disposable {
         this.redraw();
         return this;
     }
-    
+
     public move(): Motion {
         return this.moveTo(null, null);
     }
@@ -102,12 +108,7 @@ export class Motion implements vscode.Disposable {
             case MotionMode.Caret:
                 // Valid Positions for Caret: [0, eol)
                 this._position.positionOptions = PositionOptions.CharacterWiseExclusive;
-                
-                if (this.position.character > this._position.getLineEnd().character) {
-                    this._position = this._position.getLineEnd();
-                    this._desiredColumn = this._position.character;
-                }
-                
+
                 this.highlightBlock(this.position);
                 break;
 
@@ -118,7 +119,7 @@ export class Motion implements vscode.Disposable {
                 break;
         }
     }
-    
+
     /**
      * Allows us to simulate a block cursor by highlighting a 1 character
      * space at the provided position in a lighter color.
